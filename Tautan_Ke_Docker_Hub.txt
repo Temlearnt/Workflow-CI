@@ -1,0 +1,17 @@
+=== DOCKER HUB IMAGE ===
+
+Repository: temlearnt/sales-forecasting-mlflow
+Tag: latest
+
+Link: https://hub.docker.com/r/temlearnt/sales-forecasting-mlflow
+
+Pull command:
+docker pull temlearnt/sales-forecasting-mlflow:latest
+
+Run command:
+docker run -v $(pwd)/artifacts:/app/mlruns temlearnt/sales-forecasting-mlflow:latest -P n_estimators=200
+
+Username Docker Hub: temlearnt
+Repository: Workflow-CI
+Tanggal: 2026-06-07
+EOF

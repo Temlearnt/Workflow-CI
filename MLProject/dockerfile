@@ -1,0 +1,26 @@
+# Base image Python 3.10
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install MLflow dan dependencies
+RUN pip install --no-cache-dir \
+    mlflow>=2.5.0 \
+    pandas>=1.5.0 \
+    numpy>=1.23.0 \
+    scikit-learn>=1.2.0
+
+# Copy semua file proyek ke container
+COPY . /app
+
+# Expose port untuk MLflow
+EXPOSE 5000
+
+# Entry point untuk menjalankan MLflow project
+ENTRYPOINT ["mlflow", "run", "."]

@@ -10,20 +10,10 @@ import argparse
 import os
 
 # ============================================================
-# DAGSHUB CONFIGURATION
+# HAPUS DAGSHUB CONFIGURATION - MLflow Project akan handle tracking
 # ============================================================
-DAGSHUB_USERNAME = "Temlearnt"
-DAGSHUB_REPO = "Eksperimen_SML_IPutuSuthaSatyawan"
-DAGSHUB_TOKEN = os.environ.get("DAGSHUB_TOKEN", "")
-
-print(f"Tracking URI: https://dagshub.com/{DAGSHUB_USERNAME}/{DAGSHUB_REPO}.mlflow")
-print(f"Token loaded: {len(DAGSHUB_TOKEN) > 0}")
-
-if DAGSHUB_TOKEN:
-    mlflow.set_tracking_uri(f"https://dagshub.com/{DAGSHUB_USERNAME}/{DAGSHUB_REPO}.mlflow")
-    os.environ["MLFLOW_TRACKING_USERNAME"] = DAGSHUB_USERNAME
-    os.environ["MLFLOW_TRACKING_PASSWORD"] = DAGSHUB_TOKEN
-# ============================================================
+# MLflow akan menggunakan tracking URI yang sudah diset di workflow
+# atau default ke local
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--n_estimators", type=int, default=200)
@@ -35,37 +25,35 @@ args = parser.parse_args()
 df = pd.read_csv('dataset_preprocessing/Retail_Transactions_preprocessing.csv')
 print(f"📊 Dataset shape: {df.shape}")
 
-# ============= CLEAN DATA: Drop non-numeric columns =============
+# ============= CLEAN DATA =============
 TARGET = 'Total_Cost'
 
-# Drop kolom yang tidak diperlukan (non-numeric)
+# Drop kolom non-numeric
 cols_to_drop = ['Product', 'Transaction_ID', 'Customer_Name', 'Date']
 df = df.drop(columns=[col for col in cols_to_drop if col in df.columns])
 
-# Encode categorical columns if any
+# Encode categorical columns
 categorical_cols = df.select_dtypes(include=['object']).columns.tolist()
 for col in categorical_cols:
     le = LabelEncoder()
     df[col] = le.fit_transform(df[col].astype(str))
     print(f"✅ Encoded: {col}")
 
-# Verify target exists
 if TARGET not in df.columns:
-    raise ValueError(f"Target '{TARGET}' not found in dataset. Columns: {df.columns.tolist()}")
+    raise ValueError(f"Target '{TARGET}' not found. Columns: {df.columns.tolist()}")
 
 X = df.drop(columns=[TARGET])
 y = df[TARGET]
 # ============================================================
 
 print(f"📊 Features shape: {X.shape}")
-print(f"📊 Features types:\n{X.dtypes.value_counts()}")
 
 # Split
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-# Set experiment
+# MLflow tracking - biar default atau dari environment
 mlflow.set_experiment("Workflow-CI-Experiment")
 
 with mlflow.start_run() as run:

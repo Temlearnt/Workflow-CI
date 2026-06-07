@@ -3,4 +3,8 @@ conda_env: conda.yaml
 
 entry_points:
   main:
-    command: "python modelling.py"
+    parameters:
+      n_estimators: {type: int, default: 200}
+      max_depth: {type: int, default: 10}
+      min_samples_split: {type: int, default: 2}
+    command: "python modelling.py --n_estimators {n_estimators} --max_depth {max_depth} --min_samples_split {min_samples_split}"

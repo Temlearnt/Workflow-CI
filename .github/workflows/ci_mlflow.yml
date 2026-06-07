@@ -3,8 +3,6 @@ name: CI - MLflow Project Training
 on:
   push:
     branches: [main, master]
-    paths:
-      - 'MLProject/**'
   workflow_dispatch:
 
 jobs:
@@ -21,11 +19,8 @@ jobs:
           auto-update-conda: true
           python-version: '3.10'
 
-      - name: Install MLflow
-        run: |
-          pip install mlflow
-
       - name: Run MLflow Project
+        shell: bash -l {0}  # ← PENTING: agar conda terinisialisasi
         run: |
           cd MLProject
           mlflow run . -P n_estimators=200 -P max_depth=10 -P min_samples_split=2

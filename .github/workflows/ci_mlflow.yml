@@ -13,14 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          auto-update-conda: true
           python-version: '3.10'
 
+      - name: Install MLflow
+        run: |
+          pip install mlflow pandas numpy scikit-learn
+
       - name: Run MLflow Project
-        shell: bash -l {0}
         run: |
           cd MLProject
-          mlflow run . -P n_estimators=200 -P max_depth=10 -P min_samples_split=2
+          mlflow run --env-manager=local . -P n_estimators=200 -P max_depth=10 -P min_samples_split=2
